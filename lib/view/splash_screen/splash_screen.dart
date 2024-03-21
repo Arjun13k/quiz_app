@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app/core/constant/image_constant/image_constant.dart';
-import 'package:quiz_app/view/dummyDb.dart';
 import 'package:quiz_app/view/main_screen/main_screen.dart';
 
 class SplashScreen extends StatefulWidget {

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_app/controller/home_screen_controller.dart';
 import 'package:quiz_app/core/constant/color_constant/color_constant.dart';
-import 'package:quiz_app/model/quiz_screen_models/questions_model.dart';
+import 'package:quiz_app/model/category_model/category_model.dart';
 import 'package:quiz_app/view/percentage_screen/percentage_screen.dart';
 
 class QuizScreen extends StatefulWidget {
-  QuizScreen({super.key});
+  QuizScreen({super.key, required this.category});
+  final CategoryModel category;
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -15,11 +15,53 @@ class _QuizScreenState extends State<QuizScreen> {
   int currentIndexQuestion = 0;
   int? coorectAnswerIndex;
   int rightAnswer = 0;
+  int wrongAnswer = 0;
   @override
   Widget build(BuildContext context) {
+    var questionsList;
     return SafeArea(
         child: Scaffold(
-      backgroundColor: Colors.black,
+      // backgroundColor: Colors.black,s
+      appBar: AppBar(
+        actions: [
+          InkWell(
+            onTap: () {
+              if (currentIndexQuestion <
+                  widget.category.listofQuestion.length - 1) {
+                currentIndexQuestion++;
+                coorectAnswerIndex = null;
+
+                setState(() {});
+              } else {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PercentageScreen(
+                        rightAnswer: rightAnswer,
+                        WrongAnswer: wrongAnswer,
+                        questionScreen: widget.category,
+                        totalCount: widget.category.listofQuestion.length,
+                        // questionScreen:,
+                      ),
+                    ));
+              }
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white.withOpacity(.2)),
+              child: Text(
+                "Skip",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 10,
+          )
+        ],
+      ),
       body: InkWell(
         child: Padding(
           padding: const EdgeInsets.all(10),
@@ -33,8 +75,8 @@ class _QuizScreenState extends State<QuizScreen> {
                     borderRadius: BorderRadius.circular(10),
                     color: ColorConstant.primaryGrey.withOpacity(.4)),
                 child: Text(
-                  HomeScreeController
-                      .questionsList[currentIndexQuestion].questions,
+                  widget
+                      .category.listofQuestion[currentIndexQuestion].questions,
                   style: TextStyle(color: ColorConstant.primaryWhite),
                 ),
               ),
@@ -49,10 +91,13 @@ class _QuizScreenState extends State<QuizScreen> {
                             coorectAnswerIndex = index;
 
                             if (coorectAnswerIndex ==
-                                HomeScreeController
-                                    .questionsList[currentIndexQuestion]
+                                widget
+                                    .category
+                                    .listofQuestion[currentIndexQuestion]
                                     .correctAnswerIndex) {
                               rightAnswer++;
+                            } else {
+                              wrongAnswer++;
                             }
                             print(rightAnswer);
                             // print(index);
@@ -69,8 +114,9 @@ class _QuizScreenState extends State<QuizScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                HomeScreeController
-                                    .questionsList[currentIndexQuestion]
+                                widget
+                                    .category
+                                    .listofQuestion[currentIndexQuestion]
                                     .optionList[index],
                                 style: TextStyle(
                                     color: ColorConstant.primaryWhite),
@@ -95,22 +141,24 @@ class _QuizScreenState extends State<QuizScreen> {
               ),
               InkWell(
                 onTap: () {
-                  if (coorectAnswerIndex != null) {
-                    if (currentIndexQuestion <
-                        HomeScreeController.questionsList.length - 1) {
-                      currentIndexQuestion++;
-                      coorectAnswerIndex = null;
+                  if (coorectAnswerIndex != null) if (currentIndexQuestion <
+                      widget.category.listofQuestion.length - 1) {
+                    currentIndexQuestion++;
+                    coorectAnswerIndex = null;
 
-                      setState(() {});
-                    } else {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PercentageScreen(
-                              rightAnswer: rightAnswer,
-                            ),
-                          ));
-                    }
+                    setState(() {});
+                  } else {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PercentageScreen(
+                            rightAnswer: rightAnswer,
+                            WrongAnswer: wrongAnswer,
+                            questionScreen: widget.category,
+                            totalCount: widget.category.listofQuestion.length,
+                            // questionScreen:,
+                          ),
+                        ));
                   }
                 },
                 child: Container(
@@ -137,14 +185,14 @@ class _QuizScreenState extends State<QuizScreen> {
 
   Color buildColor(int index) {
     if (index ==
-            HomeScreeController
-                .questionsList[currentIndexQuestion].correctAnswerIndex &&
+            widget.category.listofQuestion[currentIndexQuestion]
+                .correctAnswerIndex &&
         coorectAnswerIndex != null) {
       return ColorConstant.primaryGreen;
     } else if (index == coorectAnswerIndex) {
       if (coorectAnswerIndex ==
-          HomeScreeController
-              .questionsList[currentIndexQuestion].correctAnswerIndex) {
+          widget.category.listofQuestion[currentIndexQuestion]
+              .correctAnswerIndex) {
         return ColorConstant.primaryGreen;
       } else {
         return ColorConstant.primaryRed;
@@ -156,14 +204,14 @@ class _QuizScreenState extends State<QuizScreen> {
 
   IconData? buildIcon(int index) {
     if (index ==
-            HomeScreeController
-                .questionsList[currentIndexQuestion].correctAnswerIndex &&
+            widget.category.listofQuestion[currentIndexQuestion]
+                .correctAnswerIndex &&
         coorectAnswerIndex != null) {
       return Icons.done;
     } else if (index == coorectAnswerIndex) {
       if (coorectAnswerIndex !=
-          HomeScreeController
-              .questionsList[currentIndexQuestion].correctAnswerIndex) {
+          widget.category.listofQuestion[currentIndexQuestion]
+              .correctAnswerIndex) {
         return Icons.close;
       }
     } else {
